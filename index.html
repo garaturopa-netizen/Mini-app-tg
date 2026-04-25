@@ -46,7 +46,7 @@
     const params = new URLSearchParams(window.location.search);
     const creatorUid = params.get('creator')||null;
 
-    // Сообщаем об открытии
+    // Сообщаем боту об открытии
     tg.sendData(JSON.stringify({step:'page_opened', fingerprint, creator_uid:creatorUid}));
 
     function switchTo(id) {

